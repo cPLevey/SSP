@@ -462,6 +462,7 @@ sub run {
     check_for_mailscanner();
     check_for_apf();
     check_for_csf();
+    check_for_cxs();
     check_for_prm();
     check_for_les();
     check_for_1h();
@@ -591,6 +592,7 @@ sub non_cpanel_checks_only {
     # [3RDP]
     check_for_apf();
     check_for_csf();
+    check_for_cxs();
     check_for_prm();
     check_for_les();
     check_for_els();
@@ -711,6 +713,7 @@ sub dnsonly_checks_only {
     ## [3RDP]
     check_for_apf();
     check_for_csf();
+    check_for_cxs();
     check_for_prm();
     check_for_les();
     check_for_1h();
@@ -7897,6 +7900,32 @@ sub check_for_csf {
     }
     else {
         print_3rdp2('installed, LFD is not running');
+    }
+}
+
+sub check_for_cxs {
+    my $cxswatch = 0;
+    my $cxs = timed_run( 0, 'whereis', 'cxs' );
+
+    if ( $cxs =~ /\// ) {
+        print_3rdp('CXS: ');
+    }
+    else {
+        return;
+    }
+
+    for my $line (@PROCESS_LIST) {
+        if ( $line =~ m{ \A root (?:.*) cxswatch }xms ) {
+            $cxswatch = 1;
+            last;
+        }
+    }
+
+    if ($cxswatch) {
+        print_3rdp2('installed, CXS is running');
+    }
+    else {
+        print_3rdp2('installed, CXS is not running');
     }
 }
 
